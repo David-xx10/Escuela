@@ -1,5 +1,9 @@
 from src.entities.periodo_academico import PeriodoAcademico
 
+class PeriodoAcademicoCRUD:
+    def __init__(self):
+        self.periodos_academicos = []
+
 
 periodos_academicos: list[PeriodoAcademico] = []
 
