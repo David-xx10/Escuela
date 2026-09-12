@@ -1,26 +1,16 @@
-class Grupo:
-    def __init__(self, id_grupo: int, id_curso: int, id_profesor: int, cupo: int):
-        if not isinstance(id_grupo, int) or id_grupo <= 0:
-            raise ValueError("El id del grupo debe ser un entero positivo.")
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
 
-        if not isinstance(id_curso, int) or id_curso <= 0:
-            raise ValueError("El id del curso debe ser un entero positivo.")
+from src.database.conection import Base
 
-        if not isinstance(id_profesor, int) or id_profesor <= 0:
-            raise ValueError("El id del profesor debe ser un entero positivo.")
 
-        if not isinstance(cupo, int) or cupo <= 0:
-            raise ValueError("El cupo debe ser un entero positivo.")
+class Grupo(Base):
+    __tablename__ = "grupos"
 
-        self.id_grupo = id_grupo
-        self.id_curso = id_curso
-        self.id_profesor = id_profesor
-        self.cupo = cupo
-
-    def __str__(self):
-        return (
-            f"Grupo {self.id_grupo}: "
-            f"Curso {self.id_curso}, "
-            f"Profesor {self.id_profesor}, "
-            f"Cupo {self.cupo}"
-        )
+    id_grupo: Mapped[int] = mapped_column(primary_key=True)
+    id_curso: Mapped[int] = mapped_column(ForeignKey("cursos.id_curso"))
+    id_profesor: Mapped[int] = mapped_column(ForeignKey("profesores.id_profesor"))
+    id_periodo: Mapped[int] = mapped_column(
+        ForeignKey("periodos_academicos.id_periodo")
+    )
+    cupo: Mapped[int] = mapped_column()
