@@ -1,46 +1,91 @@
+from src.database.conection import get_session
 from src.entities.matricula import Matricula
+
 
 class MatriculaCRUD:
     def __init__(self):
-        self.matriculas = []
+        pass
 
     def crear_matricula(self, matricula: Matricula) -> Matricula:
-        if self.obtener_matricula(matricula.id_matricula) is not None:
-            raise ValueError("Ya existe una matrícula con ese ID.")
+        session = get_session()
+        try:
+            if (
+                session.query(Matricula)
+                .filter_by(id_matricula=matricula.id_matricula)
+                .first()
+                is not None
+            ):
+                raise ValueError("Ya existe una matrícula con ese ID.")
 
-        self.matriculas.append(matricula)
-        return matricula
+            session.add(matricula)
+            session.commit()
+            return matricula
+        finally:
+            session.close()
 
     def obtener_matricula(self, id_matricula: int) -> Matricula | None:
-        for matricula in self.matriculas:
-            if matricula.id_matricula == id_matricula:
-                return matricula
+        session = get_session()
+        try:
+            return (
+                session.query(Matricula)
+                .filter_by(id_matricula=id_matricula)
+                .first()
+            )
+        finally:
+            session.close()
 
-        return None
+    def actualizar_matricula(
+        self, id_matricula: int, matricula: Matricula
+    ) -> Matricula | None:
+        session = get_session()
+        try:
+            matricula_actual = (
+                session.query(Matricula)
+                .filter_by(id_matricula=id_matricula)
+                .first()
+            )
+            if matricula_actual is None:
+                return None
 
-    def actualizar_matricula(self, id_matricula: int, matricula: Matricula) -> Matricula | None:
-        for i, matricula_actual in enumerate(self.matriculas):
-            if matricula_actual.id_matricula == id_matricula:
+            if (
+                matricula.id_matricula != id_matricula
+                and session.query(Matricula)
+                .filter_by(id_matricula=matricula.id_matricula)
+                .first()
+                is not None
+            ):
+                raise ValueError("El nuevo ID ya pertenece a otra matrícula.")
 
-                if (
-                    matricula.id_matricula != id_matricula
-                    and self.obtener_matricula(matricula.id_matricula) is not None
-                ):
-                    raise ValueError("El nuevo ID ya pertenece a otra matrícula.")
-
-                self.matriculas[i] = matricula
-                return matricula
-
-        return None
+            matricula_actual.id_matricula = matricula.id_matricula
+            matricula_actual.id_estudiante = matricula.id_estudiante
+            matricula_actual.id_curso = matricula.id_curso
+            matricula_actual.id_grupo = matricula.id_grupo
+            matricula_actual.fecha_matricula = matricula.fecha_matricula
+            session.commit()
+            return matricula_actual
+        finally:
+            session.close()
 
     def eliminar_matricula(self, id_matricula: int) -> bool:
-        matricula = self.obtener_matricula(id_matricula)
+        session = get_session()
+        try:
+            matricula = (
+                session.query(Matricula)
+                .filter_by(id_matricula=id_matricula)
+                .first()
+            )
+            if matricula is None:
+                return False
 
-        if matricula is None:
-            return False
-
-        self.matriculas.remove(matricula)
-        return True
+            session.delete(matricula)
+            session.commit()
+            return True
+        finally:
+            session.close()
 
     def listar_matriculas(self) -> list[Matricula]:
-        return self.matriculas.copy()
+        session = get_session()
+        try:
+            return session.query(Matricula).all()
+        finally:
+            session.close()
