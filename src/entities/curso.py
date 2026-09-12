@@ -1,21 +1,13 @@
-class Curso:
-    def __init__(self, id_curso: int, nombre: str, creditos: int, id_facultad: int):
-        if not isinstance(id_curso, int) or id_curso <= 0:
-            raise ValueError("El id del curso debe ser un entero positivo.")
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column
 
-        if not isinstance(nombre, str) or not nombre.strip():
-            raise ValueError("El nombre del curso no puede estar vacío.")
+from src.database.conection import Base
 
-        if not isinstance(creditos, int) or creditos <= 0:
-            raise ValueError("Los créditos deben ser un entero positivo.")
 
-        if not isinstance(id_facultad, int) or id_facultad <= 0:
-            raise ValueError("El id de la facultad debe ser un entero positivo.")
+class Curso(Base):
+    __tablename__ = "cursos"
 
-        self.id_curso = id_curso
-        self.nombre = nombre.strip()
-        self.creditos = creditos
-        self.id_facultad = id_facultad
-
-    def __str__(self):
-        return f"Curso {self.id_curso}: {self.nombre} " f"({self.creditos} créditos)"
+    id_curso: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    creditos: Mapped[int] = mapped_column()
+    id_facultad: Mapped[int] = mapped_column(ForeignKey("facultades.id_facultad"))

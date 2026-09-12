@@ -1,48 +1,72 @@
+from src.database.conection import get_session
 from src.entities.curso import Curso
 
 
 class CursoCRUD:
     def __init__(self):
-        self.cursos = []
+        pass
 
     def crear_curso(self, curso: Curso) -> Curso:
-        if self.obtener_curso(curso.id_curso) is not None:
-            raise ValueError("Ya existe un curso con ese ID.")
+        session = get_session()
+        try:
+            if (
+                session.query(Curso).filter_by(id_curso=curso.id_curso).first()
+                is not None
+            ):
+                raise ValueError("Ya existe un curso con ese ID.")
 
-        self.cursos.append(curso)
-        return curso
+            session.add(curso)
+            session.commit()
+            return curso
+        finally:
+            session.close()
 
     def obtener_curso(self, id_curso: int) -> Curso | None:
-        for curso in self.cursos:
-            if curso.id_curso == id_curso:
-                return curso
-
-        return None
+        session = get_session()
+        try:
+            return session.query(Curso).filter_by(id_curso=id_curso).first()
+        finally:
+            session.close()
 
     def actualizar_curso(self, id_curso: int, curso: Curso) -> Curso | None:
+        session = get_session()
+        try:
+            curso_actual = session.query(Curso).filter_by(id_curso=id_curso).first()
+            if curso_actual is None:
+                return None
 
-        for i, curso_actual in enumerate(self.cursos):
-            if curso_actual.id_curso == id_curso:
+            if (
+                curso.id_curso != id_curso
+                and session.query(Curso).filter_by(id_curso=curso.id_curso).first()
+                is not None
+            ):
+                raise ValueError("El nuevo ID ya pertenece a otro curso.")
 
-                if (
-                    curso.id_curso != id_curso
-                    and self.obtener_curso(curso.id_curso) is not None
-                ):
-                    raise ValueError("El nuevo ID ya pertenece a otro curso.")
-
-                self.cursos[i] = curso
-                return curso
-
-        return None
+            curso_actual.id_curso = curso.id_curso
+            curso_actual.nombre = curso.nombre
+            curso_actual.creditos = curso.creditos
+            curso_actual.id_facultad = curso.id_facultad
+            session.commit()
+            return curso_actual
+        finally:
+            session.close()
 
     def eliminar_curso(self, id_curso: int) -> bool:
-        curso = self.obtener_curso(id_curso)
+        session = get_session()
+        try:
+            curso = session.query(Curso).filter_by(id_curso=id_curso).first()
+            if curso is None:
+                return False
 
-        if curso is None:
-            return False
-
-        self.cursos.remove(curso)
-        return True
+            session.delete(curso)
+            session.commit()
+            return True
+        finally:
+            session.close()
 
     def listar_cursos(self) -> list[Curso]:
-        return self.cursos.copy()
+        session = get_session()
+        try:
+            return session.query(Curso).all()
+        finally:
+            session.close()

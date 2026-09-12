@@ -1,13 +1,11 @@
-class Facultad:
-    def __init__(self, id_facultad: int, nombre: str):
-        if not isinstance(id_facultad, int) or id_facultad <= 0:
-            raise ValueError("El id de la facultad debe ser un entero positivo.")
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
-        if not isinstance(nombre, str) or not nombre.strip():
-            raise ValueError("El nombre de la facultad no puede estar vacío.")
+from src.database.conection import Base
 
-        self.id_facultad = id_facultad
-        self.nombre = nombre.strip()
 
-    def __str__(self):
-        return f"Facultad {self.id_facultad}: {self.nombre}"
+class Facultad(Base):
+    __tablename__ = "facultades"
+
+    id_facultad: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
