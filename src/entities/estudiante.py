@@ -1,14 +1,12 @@
-from src.entities.persona import Persona
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+from src.database.conection import Base
 
 
-class Estudiante(Persona):
-    def __init__(self, id_persona: int, nombre: str, apellido: str, correo: str, id_estudiante: int):
-        super().__init__(id_persona, nombre, apellido, correo)
-        
-        if not isinstance(id_estudiante, int) or id_estudiante <= 0:
-            raise ValueError("El id del estudiante debe ser un entero positivo.")
-        
-        self.id_estudiante = id_estudiante
+class Estudiante(Base):
+    __tablename__ = "estudiantes"
 
-    def __str__(self) -> str:
-        return f"{super().__str__()} - Estudiante #{self.id_estudiante}"
+    id_estudiante: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    apellido: Mapped[str] = mapped_column(String(100))
+    correo: Mapped[str] = mapped_column(String(100))
