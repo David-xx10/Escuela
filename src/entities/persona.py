@@ -1,21 +1,16 @@
-class Persona:
-    def __init__(self, id_persona: int, nombre: str, apellido: str, correo: str):
-        if not isinstance(id_persona, int) or id_persona <= 0:
-            raise ValueError("El id de la persona debe ser un entero positivo.")
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
-        if not isinstance(nombre, str) or not nombre.strip():
-            raise ValueError("El nombre de la persona no puede estar vacío.")
+from src.database.conection import Base
 
-        if not isinstance(apellido, str) or not apellido.strip():
-            raise ValueError("El apellido de la persona no puede estar vacío.")
 
-        if not isinstance(correo, str) or not correo.strip():
-            raise ValueError("El correo de la persona no puede estar vacío.")
+class Persona(Base):
+    __tablename__ = "personas"
 
-        self.id_persona = id_persona
-        self.nombre = nombre.strip()
-        self.apellido = apellido.strip()
-        self.correo = correo.strip()
+    id_persona: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100))
+    apellido: Mapped[str] = mapped_column(String(100))
+    correo: Mapped[str] = mapped_column(String(100))
 
     def __str__(self) -> str:
         return f"{self.nombre} {self.apellido} ({self.correo})"

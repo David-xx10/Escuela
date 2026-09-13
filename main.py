@@ -6,14 +6,9 @@ from src.crud.grupo_crud import GrupoCRUD
 from src.crud.matricula_crud import MatriculaCRUD
 from src.crud.nota_crud import NotaCRUD
 from src.crud.evaluacion_crud import EvaluacionCRUD
-from src.crud.periodo_academico_crud import (
-    crear_periodo_academico,
-    obtener_periodo_academico,
-    actualizar_periodo_academico,
-    eliminar_periodo_academico,
-    listar_periodos_academicos,
-)
+from src.crud.periodo_academico_crud import PeriodoAcademicoCRUD
 
+from src.database.conection import Base, engine
 from src.entities.estudiante import Estudiante
 from src.entities.profesor import Profesor
 from src.entities.curso import Curso
@@ -22,6 +17,7 @@ from src.entities.grupo import Grupo
 from src.entities.matricula import Matricula
 from src.entities.nota import Nota
 from src.entities.evaluacion import Evaluacion
+from src.entities.periodo_academico import PeriodoAcademico
 
 
 # Instancias globales de CRUD
@@ -33,6 +29,7 @@ grupo_crud = GrupoCRUD()
 matricula_crud = MatriculaCRUD()
 nota_crud = NotaCRUD()
 evaluacion_crud = EvaluacionCRUD()
+periodo_crud = PeriodoAcademicoCRUD()
 
 
 def mostrar_menu_principal():
@@ -68,13 +65,16 @@ def menu_estudiantes():
 
         if opcion == "1":
             try:
-                id_persona = int(input("ID Persona: "))
+                id_estudiante = int(input("ID Estudiante: "))
                 nombre = input("Nombre: ")
                 apellido = input("Apellido: ")
                 correo = input("Correo: ")
-                id_estudiante = int(input("ID Estudiante: "))
-                
-                estudiante = Estudiante(id_persona, nombre, apellido, correo, id_estudiante)
+                estudiante = Estudiante(
+                    id_estudiante=id_estudiante,
+                    nombre=nombre,
+                    apellido=apellido,
+                    correo=correo,
+                )
                 estudiante_crud.crear_estudiante(estudiante)
                 print(f"✓ Estudiante creado: {estudiante}")
             except ValueError as e:
@@ -94,12 +94,15 @@ def menu_estudiantes():
         elif opcion == "3":
             try:
                 id_estudiante = int(input("ID Estudiante a actualizar: "))
-                id_persona = int(input("Nuevo ID Persona: "))
                 nombre = input("Nuevo Nombre: ")
                 apellido = input("Nuevo Apellido: ")
                 correo = input("Nuevo Correo: ")
-                
-                estudiante = Estudiante(id_persona, nombre, apellido, correo, id_estudiante)
+                estudiante = Estudiante(
+                    id_estudiante=id_estudiante,
+                    nombre=nombre,
+                    apellido=apellido,
+                    correo=correo,
+                )
                 actualizado = estudiante_crud.actualizar_estudiante(id_estudiante, estudiante)
                 if actualizado:
                     print(f"✓ Estudiante actualizado: {actualizado}")
@@ -145,13 +148,16 @@ def menu_profesores():
 
         if opcion == "1":
             try:
-                id_persona = int(input("ID Persona: "))
+                id_profesor = int(input("ID Profesor: "))
                 nombre = input("Nombre: ")
                 apellido = input("Apellido: ")
                 correo = input("Correo: ")
-                id_profesor = int(input("ID Profesor: "))
-                
-                profesor = Profesor(id_persona, nombre, apellido, correo, id_profesor)
+                profesor = Profesor(
+                    id_profesor=id_profesor,
+                    nombre=nombre,
+                    apellido=apellido,
+                    correo=correo,
+                )
                 profesor_crud.crear(profesor)
                 print(f"✓ Profesor creado: {profesor}")
             except ValueError as e:
@@ -171,12 +177,15 @@ def menu_profesores():
         elif opcion == "3":
             try:
                 id_profesor = int(input("ID Profesor a actualizar: "))
-                id_persona = int(input("Nuevo ID Persona: "))
                 nombre = input("Nuevo Nombre: ")
                 apellido = input("Nuevo Apellido: ")
                 correo = input("Nuevo Correo: ")
-                
-                profesor = Profesor(id_persona, nombre, apellido, correo, id_profesor)
+                profesor = Profesor(
+                    id_profesor=id_profesor,
+                    nombre=nombre,
+                    apellido=apellido,
+                    correo=correo,
+                )
                 actualizado = profesor_crud.actualizar(id_profesor, profesor)
                 if actualizado:
                     print(f"✓ Profesor actualizado: {actualizado}")
@@ -224,8 +233,7 @@ def menu_facultades():
             try:
                 id_facultad = int(input("ID Facultad: "))
                 nombre = input("Nombre: ")
-                
-                facultad = Facultad(id_facultad, nombre)
+                facultad = Facultad(id_facultad=id_facultad, nombre=nombre)
                 facultad_crud.crear_facultad(facultad)
                 print(f"✓ Facultad creada: {facultad}")
             except ValueError as e:
@@ -246,8 +254,7 @@ def menu_facultades():
             try:
                 id_facultad = int(input("ID Facultad a actualizar: "))
                 nombre = input("Nuevo Nombre: ")
-                
-                facultad = Facultad(id_facultad, nombre)
+                facultad = Facultad(id_facultad=id_facultad, nombre=nombre)
                 actualizada = facultad_crud.actualizar_facultad(id_facultad, facultad)
                 if actualizada:
                     print(f"✓ Facultad actualizada: {actualizada}")
@@ -297,8 +304,12 @@ def menu_cursos():
                 nombre = input("Nombre: ")
                 creditos = int(input("Créditos: "))
                 id_facultad = int(input("ID Facultad: "))
-                
-                curso = Curso(id_curso, nombre, creditos, id_facultad)
+                curso = Curso(
+                    id_curso=id_curso,
+                    nombre=nombre,
+                    creditos=creditos,
+                    id_facultad=id_facultad,
+                )
                 curso_crud.crear_curso(curso)
                 print(f"✓ Curso creado: {curso}")
             except ValueError as e:
@@ -321,8 +332,12 @@ def menu_cursos():
                 nombre = input("Nuevo Nombre: ")
                 creditos = int(input("Nuevos Créditos: "))
                 id_facultad = int(input("Nuevo ID Facultad: "))
-                
-                curso = Curso(id_curso, nombre, creditos, id_facultad)
+                curso = Curso(
+                    id_curso=id_curso,
+                    nombre=nombre,
+                    creditos=creditos,
+                    id_facultad=id_facultad,
+                )
                 actualizado = curso_crud.actualizar_curso(id_curso, curso)
                 if actualizado:
                     print(f"✓ Curso actualizado: {actualizado}")
@@ -371,9 +386,15 @@ def menu_grupos():
                 id_grupo = int(input("ID Grupo: "))
                 id_curso = int(input("ID Curso: "))
                 id_profesor = int(input("ID Profesor: "))
+                id_periodo = int(input("ID Período: "))
                 cupo = int(input("Cupo: "))
-                
-                grupo = Grupo(id_grupo, id_curso, id_profesor, cupo)
+                grupo = Grupo(
+                    id_grupo=id_grupo,
+                    id_curso=id_curso,
+                    id_profesor=id_profesor,
+                    id_periodo=id_periodo,
+                    cupo=cupo,
+                )
                 grupo_crud.crear_grupo(grupo)
                 print(f"✓ Grupo creado: {grupo}")
             except ValueError as e:
@@ -395,9 +416,15 @@ def menu_grupos():
                 id_grupo = int(input("ID Grupo a actualizar: "))
                 id_curso = int(input("Nuevo ID Curso: "))
                 id_profesor = int(input("Nuevo ID Profesor: "))
+                id_periodo = int(input("Nuevo ID Período: "))
                 cupo = int(input("Nuevo Cupo: "))
-                
-                grupo = Grupo(id_grupo, id_curso, id_profesor, cupo)
+                grupo = Grupo(
+                    id_grupo=id_grupo,
+                    id_curso=id_curso,
+                    id_profesor=id_profesor,
+                    id_periodo=id_periodo,
+                    cupo=cupo,
+                )
                 actualizado = grupo_crud.actualizar_grupo(id_grupo, grupo)
                 if actualizado:
                     print(f"✓ Grupo actualizado: {actualizado}")
@@ -450,8 +477,15 @@ def menu_evaluaciones():
                 id_grupo = int(input("ID Grupo: "))
                 fecha = input("Fecha (YYYY-MM-DD): ")
                 valor_maximo = float(input("Valor Máximo: "))
-                
-                evaluacion = Evaluacion(id_evaluacion, nombre, descripcion, tipo, id_grupo, fecha, valor_maximo)
+                evaluacion = Evaluacion(
+                    id_evaluacion=id_evaluacion,
+                    nombre=nombre,
+                    descripcion=descripcion,
+                    tipo=tipo,
+                    id_grupo=id_grupo,
+                    fecha=fecha,
+                    valor_maximo=valor_maximo,
+                )
                 evaluacion_crud.crear_evaluacion(evaluacion)
                 print(f"✓ Evaluación creada: {evaluacion}")
             except ValueError as e:
@@ -477,8 +511,15 @@ def menu_evaluaciones():
                 id_grupo = int(input("Nuevo ID Grupo: "))
                 fecha = input("Nueva Fecha: ")
                 valor_maximo = float(input("Nuevo Valor Máximo: "))
-                
-                evaluacion = Evaluacion(id_evaluacion, nombre, descripcion, tipo, id_grupo, fecha, valor_maximo)
+                evaluacion = Evaluacion(
+                    id_evaluacion=id_evaluacion,
+                    nombre=nombre,
+                    descripcion=descripcion,
+                    tipo=tipo,
+                    id_grupo=id_grupo,
+                    fecha=fecha,
+                    valor_maximo=valor_maximo,
+                )
                 actualizada = evaluacion_crud.actualizar_evaluacion(id_evaluacion, evaluacion)
                 if actualizada:
                     print(f"✓ Evaluación actualizada: {actualizada}")
@@ -526,18 +567,16 @@ def menu_periodos():
             try:
                 id_periodo = int(input("ID Período: "))
                 nombre = input("Nombre: ")
-                fecha_inicio = input("Fecha Inicio (YYYY-MM-DD): ")
-                fecha_fin = input("Fecha Fin (YYYY-MM-DD): ")
-                
-                crear_periodo_academico(id_periodo, nombre, fecha_inicio, fecha_fin)
-                print(f"✓ Período creado")
+                periodo = PeriodoAcademico(id_periodo=id_periodo, nombre=nombre)
+                periodo_crud.crear_periodo_academico(periodo)
+                print("✓ Período creado")
             except ValueError as e:
                 print(f"✗ Error: {e}")
 
         elif opcion == "2":
             try:
                 id_periodo = int(input("ID Período: "))
-                periodo = obtener_periodo_academico(id_periodo)
+                periodo = periodo_crud.obtener_periodo_academico(id_periodo)
                 if periodo:
                     print(f"✓ {periodo}")
                 else:
@@ -549,10 +588,8 @@ def menu_periodos():
             try:
                 id_periodo = int(input("ID Período a actualizar: "))
                 nombre = input("Nuevo Nombre: ")
-                fecha_inicio = input("Nueva Fecha Inicio: ")
-                fecha_fin = input("Nueva Fecha Fin: ")
-                
-                actualizado = actualizar_periodo_academico(id_periodo, nombre=nombre, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin)
+                periodo = PeriodoAcademico(id_periodo=id_periodo, nombre=nombre)
+                actualizado = periodo_crud.actualizar_periodo_academico(id_periodo, periodo)
                 if actualizado:
                     print(f"✓ Período actualizado: {actualizado}")
                 else:
@@ -563,7 +600,7 @@ def menu_periodos():
         elif opcion == "4":
             try:
                 id_periodo = int(input("ID Período a eliminar: "))
-                eliminado = eliminar_periodo_academico(id_periodo)
+                eliminado = periodo_crud.eliminar_periodo_academico(id_periodo)
                 if eliminado:
                     print("✓ Período eliminado")
                 else:
@@ -572,7 +609,7 @@ def menu_periodos():
                 print("✗ ID inválido")
 
         elif opcion == "5":
-            periodos = listar_periodos_academicos()
+            periodos = periodo_crud.listar_periodos_academicos()
             if periodos:
                 print("\n--- Lista de Períodos Académicos ---")
                 for per in periodos:
@@ -600,10 +637,20 @@ def menu_matriculas():
             try:
                 id_matricula = int(input("ID Matrícula: "))
                 id_estudiante = int(input("ID Estudiante: "))
-                id_grupo = int(input("ID Grupo: "))
+                id_curso_raw = input("ID Curso (opcional, dejar vacío si no aplica): ").strip()
+                id_grupo_raw = input("ID Grupo (opcional, dejar vacío si no aplica): ").strip()
                 fecha_matricula = input("Fecha Matrícula (YYYY-MM-DD): ")
-                
-                matricula = Matricula(id_matricula, id_estudiante, id_grupo, fecha_matricula)
+
+                id_curso = int(id_curso_raw) if id_curso_raw else None
+                id_grupo = int(id_grupo_raw) if id_grupo_raw else None
+
+                matricula = Matricula(
+                    id_matricula=id_matricula,
+                    id_estudiante=id_estudiante,
+                    id_curso=id_curso,
+                    id_grupo=id_grupo,
+                    fecha_matricula=fecha_matricula,
+                )
                 matricula_crud.crear_matricula(matricula)
                 print(f"✓ Matrícula creada: {matricula}")
             except ValueError as e:
@@ -624,10 +671,20 @@ def menu_matriculas():
             try:
                 id_matricula = int(input("ID Matrícula a actualizar: "))
                 id_estudiante = int(input("Nuevo ID Estudiante: "))
-                id_grupo = int(input("Nuevo ID Grupo: "))
+                id_curso_raw = input("Nuevo ID Curso (opcional): ").strip()
+                id_grupo_raw = input("Nuevo ID Grupo (opcional): ").strip()
                 fecha_matricula = input("Nueva Fecha Matrícula: ")
-                
-                matricula = Matricula(id_matricula, id_estudiante, id_grupo, fecha_matricula)
+
+                id_curso = int(id_curso_raw) if id_curso_raw else None
+                id_grupo = int(id_grupo_raw) if id_grupo_raw else None
+
+                matricula = Matricula(
+                    id_matricula=id_matricula,
+                    id_estudiante=id_estudiante,
+                    id_curso=id_curso,
+                    id_grupo=id_grupo,
+                    fecha_matricula=fecha_matricula,
+                )
                 actualizada = matricula_crud.actualizar_matricula(id_matricula, matricula)
                 if actualizada:
                     print(f"✓ Matrícula actualizada: {actualizada}")
@@ -677,8 +734,12 @@ def menu_notas():
                 id_estudiante = int(input("ID Estudiante: "))
                 id_evaluacion = int(input("ID Evaluación: "))
                 valor = float(input("Valor Nota: "))
-                
-                nota = Nota(id_nota, id_estudiante, id_evaluacion, valor)
+                nota = Nota(
+                    id_nota=id_nota,
+                    id_estudiante=id_estudiante,
+                    id_evaluacion=id_evaluacion,
+                    valor=valor,
+                )
                 nota_crud.registrar_nota(nota)
                 print(f"✓ Nota registrada: {nota}")
             except ValueError as e:
@@ -701,8 +762,12 @@ def menu_notas():
                 id_estudiante = int(input("Nuevo ID Estudiante: "))
                 id_evaluacion = int(input("Nuevo ID Evaluación: "))
                 valor = float(input("Nuevo Valor: "))
-                
-                nota = Nota(id_nota, id_estudiante, id_evaluacion, valor)
+                nota = Nota(
+                    id_nota=id_nota,
+                    id_estudiante=id_estudiante,
+                    id_evaluacion=id_evaluacion,
+                    valor=valor,
+                )
                 actualizada = nota_crud.actualizar_nota(id_nota, nota)
                 if actualizada:
                     print(f"✓ Nota actualizada: {actualizada}")
@@ -748,24 +813,29 @@ def listar_estudiantes_relaciones():
     if not estudiantes:
         print("No hay estudiantes registrados")
         return
-    
+
     print("\n--- ESTUDIANTES REGISTRADOS ---")
     for est in estudiantes:
         print(f"\n{est}")
-        
-        # Mostrar matrículas del estudiante
-        matriculas = [m for m in matricula_crud.listar_matriculas() if m.id_estudiante == est.id_estudiante]
+        matriculas = [
+            m for m in matricula_crud.listar_matriculas() if m.id_estudiante == est.id_estudiante
+        ]
         if matriculas:
             print("  Matrículas:")
             for mat in matriculas:
                 print(f"    - {mat}")
-        
-        # Mostrar promedio del estudiante
         promedio = nota_crud.calcular_promedio(est.id_estudiante)
         print(f"  Promedio: {promedio:.2f}")
 
 
+def inicializar_db():
+    print("Conectando a Neon y creando tablas...")
+    Base.metadata.create_all(bind=engine)
+    print("¡Tablas listas y sincronizadas con Neon!")
+
+
 def main():
+    inicializar_db()
     while True:
         mostrar_menu_principal()
         opcion = input("Seleccione opción: ").strip()
