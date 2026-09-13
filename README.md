@@ -8,3 +8,5 @@ Proyecto académico desarrollado en Python para la gestión de una institución 
   
 El sistema permite gestionar información relacionada con estudiantes, profesores, cursos, grupos, matrículas, periodos académicos, evaluaciones y notas.
 El proyecto permite realizar operaciones CRUD sobre las entidades y demostrar las relaciones existentes entre ellas.
+
+
