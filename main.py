@@ -7,6 +7,9 @@ from src.api.grupos import router as grupos_router
 from src.api.estudiantes import router as estudiantes_router
 from src.api.profesores import router as profesores_router
 from src.api.notas import router as notas_router
+from src.api.evaluacion import router as evaluaciones_router
+from src.api.matriculas import router as matriculas_router
+from src.api.periodo_academico import router as periodos_academicos_router
 
 
 app = FastAPI(
@@ -27,6 +30,9 @@ app.include_router(grupos_router)
 app.include_router(estudiantes_router)
 app.include_router(profesores_router)
 app.include_router(notas_router)
+app.include_router(matriculas_router)
+app.include_router(evaluaciones_router)
+app.include_router(periodos_academicos_router)
 
 
 @app.get("/")
