@@ -19,7 +19,11 @@ class FacultadCRUD:
 
             session.add(facultad)
             session.commit()
+            session.refresh(facultad)
             return facultad
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
@@ -41,19 +45,13 @@ class FacultadCRUD:
             if facultad_actual is None:
                 return None
 
-            if (
-                facultad.id_facultad != id_facultad
-                and session.query(Facultad)
-                .filter_by(id_facultad=facultad.id_facultad)
-                .first()
-                is not None
-            ):
-                raise ValueError("El nuevo ID ya pertenece a otra facultad.")
-
-            facultad_actual.id_facultad = facultad.id_facultad
             facultad_actual.nombre = facultad.nombre
             session.commit()
+            session.refresh(facultad_actual)
             return facultad_actual
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
@@ -69,6 +67,9 @@ class FacultadCRUD:
             session.delete(facultad)
             session.commit()
             return True
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
