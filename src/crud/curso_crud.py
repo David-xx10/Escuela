@@ -17,7 +17,11 @@ class CursoCRUD:
 
             session.add(curso)
             session.commit()
+            session.refresh(curso)
             return curso
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
@@ -35,19 +39,15 @@ class CursoCRUD:
             if curso_actual is None:
                 return None
 
-            if (
-                curso.id_curso != id_curso
-                and session.query(Curso).filter_by(id_curso=curso.id_curso).first()
-                is not None
-            ):
-                raise ValueError("El nuevo ID ya pertenece a otro curso.")
-
-            curso_actual.id_curso = curso.id_curso
             curso_actual.nombre = curso.nombre
             curso_actual.creditos = curso.creditos
             curso_actual.id_facultad = curso.id_facultad
             session.commit()
+            session.refresh(curso_actual)
             return curso_actual
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
@@ -61,6 +61,9 @@ class CursoCRUD:
             session.delete(curso)
             session.commit()
             return True
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
