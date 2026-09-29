@@ -61,6 +61,67 @@ class GrupoResponse(BaseModel):
     cupo: int
 
     model_config = ConfigDict(from_attributes=True)
+class EstudianteBase(BaseModel):
+    nombre: str
+    apellido: str
+    correo: str
+
+
+class EstudianteCreate(EstudianteBase):
+    id_estudiante: int
+
+
+class EstudianteUpdate(EstudianteBase):
+    pass
+
+
+class EstudianteResponse(EstudianteBase):
+    id_estudiante: int
+
+    class Config:
+        from_attributes = True
+
+
+class ProfesorBase(BaseModel):
+    nombre: str
+    apellido: str
+    correo: str
+
+
+class ProfesorCreate(ProfesorBase):
+    id_profesor: int
+
+
+class ProfesorUpdate(ProfesorBase):
+    pass
+
+
+class ProfesorResponse(ProfesorBase):
+    id_profesor: int
+
+    class Config:
+        from_attributes = True
+
+
+class NotaBase(BaseModel):
+    id_estudiante: int
+    id_evaluacion: int
+    valor: float
+
+
+class NotaCreate(NotaBase):
+    id_nota: int
+
+
+class NotaUpdate(NotaBase):
+    pass
+
+
+class NotaResponse(NotaBase):
+    id_nota: int
+
+    class Config:
+        from_attributes = True
 
 
 class MatriculaCreate(BaseModel):
@@ -130,3 +191,4 @@ class PeriodoAcademicoResponse(BaseModel):
     nombre: str
 
     model_config = ConfigDict(from_attributes=True)
+
