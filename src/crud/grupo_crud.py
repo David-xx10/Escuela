@@ -17,7 +17,11 @@ class GrupoCRUD:
 
             session.add(grupo)
             session.commit()
+            session.refresh(grupo)
             return grupo
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
@@ -35,20 +39,16 @@ class GrupoCRUD:
             if grupo_actual is None:
                 return None
 
-            if (
-                grupo.id_grupo != id_grupo
-                and session.query(Grupo).filter_by(id_grupo=grupo.id_grupo).first()
-                is not None
-            ):
-                raise ValueError("El nuevo ID ya pertenece a otro grupo.")
-
-            grupo_actual.id_grupo = grupo.id_grupo
             grupo_actual.id_curso = grupo.id_curso
             grupo_actual.id_profesor = grupo.id_profesor
             grupo_actual.id_periodo = grupo.id_periodo
             grupo_actual.cupo = grupo.cupo
             session.commit()
+            session.refresh(grupo_actual)
             return grupo_actual
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
@@ -62,6 +62,9 @@ class GrupoCRUD:
             session.delete(grupo)
             session.commit()
             return True
+        except Exception:
+            session.rollback()
+            raise
         finally:
             session.close()
 
