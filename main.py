@@ -14,7 +14,7 @@ from src.api.periodo_academico import router as periodos_academicos_router
 
 app = FastAPI(
     title="Sistema de Gestión Escolar",
-    description="API REST para la gestión de facultades, cursos, grupos, estudiantes, profesores y notas.",
+    description="API REST para la gestión de facultades, cursos, grupos, matriculas, evaluaciones, periodos academicos, estudiantes, profesores y notas.",
 )
 
 app.add_middleware(
