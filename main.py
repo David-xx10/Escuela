@@ -38,3 +38,9 @@ app.include_router(periodos_academicos_router)
 @app.get("/")
 def estado_salud() -> dict[str, str]:
     return {"mensaje": "API REST activa y funcionando"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
