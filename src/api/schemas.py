@@ -180,15 +180,24 @@ class EvaluacionResponse(BaseModel):
 
 class PeriodoAcademicoCreate(BaseModel):
     nombre: str
+    fecha_inicio: str
+    fecha_fin: str
+    estado: str
 
 
 class PeriodoAcademicoUpdate(BaseModel):
     nombre: Optional[str] = None
+    fecha_inicio: Optional[str] = None
+    fecha_fin: Optional[str] = None
+    estado: Optional[str] = None
 
 
 class PeriodoAcademicoResponse(BaseModel):
     id_periodo: int
     nombre: str
+    fecha_inicio: str
+    fecha_fin: str
+    estado: str
 
     model_config = ConfigDict(from_attributes=True)
 

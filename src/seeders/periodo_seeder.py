@@ -3,7 +3,15 @@ from src.entities.periodo_academico import PeriodoAcademico
 
 
 def seed_periodos():
-    datos = [{"id_periodo": 1, "nombre": "Periodo 2026-1"}]
+    datos = [
+        {
+            "id_periodo": 1,
+            "nombre": "Periodo 2026-1",
+            "fecha_inicio": "2026-01-15",
+            "fecha_fin": "2026-06-30",
+            "estado": "activo",
+        }
+    ]
 
     session = get_session()
     try:
