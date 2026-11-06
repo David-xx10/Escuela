@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from src.api.cursos import router as cursos_router
 from src.api.facultades import router as facultades_router
@@ -10,6 +11,38 @@ from src.api.notas import router as notas_router
 from src.api.evaluacion import router as evaluaciones_router
 from src.api.matriculas import router as matriculas_router
 from src.api.periodo_academico import router as periodos_academicos_router
+from src.database.conection import Base, engine
+
+
+def crear_esquema_si_falta() -> None:
+    Base.metadata.create_all(bind=engine)
+
+    inspector = inspect(engine)
+    if not inspector.has_table("periodos_academicos"):
+        return
+
+    columnas = {col["name"] for col in inspector.get_columns("periodos_academicos")}
+    for columna, tipo in {
+        "fecha_inicio": "VARCHAR(10)",
+        "fecha_fin": "VARCHAR(10)",
+        "estado": "VARCHAR(20)",
+    }.items():
+        if columna not in columnas:
+            with engine.begin() as conexion:
+                conexion.execute(text(f"ALTER TABLE periodos_academicos ADD COLUMN {columna} {tipo}"))
+
+    with engine.begin() as conexion:
+        conexion.execute(
+            text(
+                "UPDATE periodos_academicos SET fecha_inicio = COALESCE(fecha_inicio, '2000-01-01'), "
+                "fecha_fin = COALESCE(fecha_fin, '2000-12-31'), "
+                "estado = COALESCE(estado, 'activo') "
+                "WHERE fecha_inicio IS NULL OR fecha_fin IS NULL OR estado IS NULL"
+            )
+        )
+
+
+crear_esquema_si_falta()
 
 
 app = FastAPI(
