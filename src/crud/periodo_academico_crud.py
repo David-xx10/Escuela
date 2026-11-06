@@ -9,16 +9,9 @@ class PeriodoAcademicoCRUD:
     def crear_periodo_academico(self, periodo: PeriodoAcademico) -> PeriodoAcademico:
         session = get_session()
         try:
-            if (
-                session.query(PeriodoAcademico)
-                .filter_by(id_periodo=periodo.id_periodo)
-                .first()
-                is not None
-            ):
-                raise ValueError("Ya existe un periodo académico con ese ID.")
-
             session.add(periodo)
             session.commit()
+            session.refresh(periodo)
             return periodo
         finally:
             session.close()
@@ -54,6 +47,9 @@ class PeriodoAcademicoCRUD:
 
             periodo_actual.id_periodo = periodo.id_periodo
             periodo_actual.nombre = periodo.nombre
+            periodo_actual.fecha_inicio = periodo.fecha_inicio
+            periodo_actual.fecha_fin = periodo.fecha_fin
+            periodo_actual.estado = periodo.estado
             session.commit()
             return periodo_actual
         finally:
