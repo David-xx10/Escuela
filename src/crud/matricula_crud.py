@@ -83,9 +83,9 @@ class MatriculaCRUD:
         finally:
             session.close()
 
-    def listar_matriculas(self) -> list[Matricula]:
+    def listar_matriculas(self, offset: int = 0, limit: int = 20) -> list[Matricula]:
         session = get_session()
         try:
-            return session.query(Matricula).all()
+            return session.query(Matricula).offset(offset).limit(limit).all()
         finally:
             session.close()
